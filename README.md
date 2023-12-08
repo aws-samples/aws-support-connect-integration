@@ -99,7 +99,7 @@ Example: +61464646464
 
 ```bash
 #Clone the Git Repository
-git clone https://github.com/aws-samples/aws-support-connect-integration
+git clone https://github.com/aws-samples/aws-support-connect-integration.git
 # Change Directory into the repository
 cd ./abc
 # Use the AWS CLI to deploy the CloudFormation template
