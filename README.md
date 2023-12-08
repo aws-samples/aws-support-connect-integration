@@ -101,7 +101,7 @@ Example: +61464646464
 #Clone the Git Repository
 git clone https://github.com/aws-samples/aws-support-connect-integration.git
 # Change Directory into the repository
-cd ./abc
+cd ./aws-support-connect-integration
 # Use the AWS CLI to deploy the CloudFormation template
 aws cloudformation deploy \
 --template-file template.yml \
