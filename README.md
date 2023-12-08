@@ -70,7 +70,7 @@ Following are the steps involved in setting up the solution.
 1.	Navigate to **Users** and **Routing profiles** and edit the **Basic Routing Profile**. Navigate to **Settings** and **Queues**. Navigate to **Default outbound queue** and choose **BasicQueue** to be associated with outbound calls.
 
 ### Step 2 – Create an Amazon Connect contact flow for outbound voice contact
-1.	Download the contact flow json file from <github>.
+1.	Download the contact flow json file from https://github.com/aws-samples/aws-support-connect-integration/blob/main/AMS_Outbound_Final.json
 1.	Navigate to **Routing** and **Contact flows** and **Create contact flow**.
 1.	Enter a name to the contact flow.
 1.	Choose the **Save** dropdown button and choose **Import flow**.
@@ -97,9 +97,9 @@ Example: +61464646464
 
 **Deploying the CloudFormation template via AWS CLI into the us-east-1 Region**
 
-```yaml
+```bash
 #Clone the Git Repository
-git clone https://github.com/aws-samples/abc
+git clone https://github.com/aws-samples/aws-support-connect-integration
 # Change Directory into the repository
 cd ./abc
 # Use the AWS CLI to deploy the CloudFormation template
@@ -135,7 +135,9 @@ The following aspects should be considered for use in production:
 You can clean-up the AWS Resources that were deployed in two steps.
 
 1.	 From AWS CLI run the following command to delete the EventBridge setup and configurations:
-aws cloudformation delete-stack --stack-name <StackName>
+```bash
+aws cloudformation delete-stack --stack-name <StackName> --region us-east-1
+```
 2.	Delete the Amazon connect instance using the steps below:
 https://docs.aws.amazon.com/connect/latest/adminguide/delete-connect-instance.html
 
