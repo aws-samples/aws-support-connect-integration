@@ -2,7 +2,7 @@
 
 Notifications for critical [AWS Support](https://aws.amazon.com/premiumsupport/) cases are essential to ensure that issues that affect your workloads are addressed quickly. AWS Support sends email notifications automatically when support cases are newly created or updated in your AWS accounts, and they can be viewed in AWS Support Center, or the [AWS Managed Services(AMS)](https://aws.amazon.com/managed-services/) console for customers using AMS. For critical or high priority cases, customers prefer voice notification for more immediate notice, especially during non-business hours. Today, customers use a variety of third-party tools to manage this requirement.
 
-AWS Managed Services (AMS) leverages standard AWS services, and extends you team with guidance and execution of operational best practices with specialized automations, skills, and experience that are contextual to your environment and applications. In this blog, we will describe best practices from the AMS on how you can leverage [Amazon EventBridge](https://docs.aws.amazon.com/awssupport/latest/user/event-bridge-support.html), and [Amazon Connect](https://docs.aws.amazon.com/awssupport/latest/user/event-bridge-support.html) to receive voice notifications when there are critical updates to your AWS Support cases.
+AWS Managed Services (AMS) leverages standard AWS services, and extends you team with guidance and execution of operational best practices with specialized automations, skills, and experience that are contextual to your environment and applications. In this blog, we will describe best practices from the AMS on how you can leverage [Amazon EventBridge](https://docs.aws.amazon.com/awssupport/latest/user/event-bridge-support.html), and [Amazon Connect](https://aws.amazon.com/connect/) to receive voice notifications when there are critical updates to your AWS Support cases.
 
 ## Solution Architecture
 
@@ -27,18 +27,17 @@ The solution works as follows:
 1.	An Event is put on the EventBridge event bus, and this event is evaluated by EventBridge to determine if there is a matching EventBridge rule.
 1.	An EventBridge rule is triggered when the event matches the following pattern:
 
-   ```json
-   {
-        "detail-type": ["Support Case Update"],
-        "source": ["aws.support"],
-        "detail": {
-            "event-name": ["CreateCase"]
-        }
-    }
-   ```
+                ```json
+                {
+                    "detail-type": ["Support Case Update"],
+                    "source": ["aws.support"],
+                    "detail": {
+                        "event-name": ["CreateCase"]
+                    }
+                }
+                ```
 
-1.	The EventBridge rule publishes the event to a SNS Topic.
-1.	The SNS Topic triggers a Lambda function, passing a copy of the message received from EventBridge to the function.
+1.	The EventBridge rule publishes the event to a SNS Topic. 1.	The SNS Topic triggers a Lambda function, passing a copy of the message received from EventBridge to the function.
 1.	The Lambda function evaluates the message, retrieves the severity of the incident from AWS Support.
 1.  The Lambda function initiates an outbound voice notification to the users through Amazon Connect when the severity of the incident matches the high severity.
 
@@ -58,29 +57,28 @@ Following are the steps involved in setting up the solution.
 1.	Create a test AWS Support Case to verify that the solution has been implemented.
 
 ### Step 1 – Provision an Amazon Connect Instance and configure to make outbound calls
-1.	The AWS Region where your Amazon Connect instance is provisioned determines which countries you can make outbound calls. [Refer to the countries you can call here](https://docs.aws.amazon.com/connect/latest/adminguide/amazon-connect-service-limits.html#country-code-allow-list). Select the appropriate AWS Region for your Amazon Connect instance where you could send outbound support notifications to your phone numbers.
+1.	The AWS Region where your Amazon Connect instance is provisioned determines which countries you can make outbound calls. [Refer to the countries you can call here](https://docs.aws.amazon.com/connect/latest/adminguide/country-code-allow-list.html). Select the appropriate AWS Region for your Amazon Connect instance where you could send outbound support notifications to your phone numbers.
 
 1.	Follow the steps detailed below in the link to create an Amazon Connect instance https://docs.aws.amazon.com/connect/latest/adminguide/amazon-connect-instances.html. When setting up **Telephony** during the Amazon Connect Instance creation, make sure you choose **Allow outgoing calls**.
 
 1.	Login to the Amazon Connect instance you created and claim a phone number to use for outbound voice notifications. Follow the steps described here - https://docs.aws.amazon.com/connect/latest/adminguide/contact-center-phone-number.html. Make sure the number you claim can make outbound calls to the destination country for the voice notification.
 
-1.	Navigate to **Routing** and **Queues**. Edit the **BasicQueue** and update the below information:
+1.	Navigate to **Routing** and choose **Queues**. Edit the **BasicQueue** and update the below information:
     1.	**Settings** – Setup **Default caller ID name** and select the phone number you claimed for the **Outbound caller ID number**. Save the configurations
 
-1.	Navigate to **Users** and **Routing profiles** and edit the **Basic Routing Profile**. Navigate to **Settings** and **Queues**. Navigate to **Default outbound queue** and choose **BasicQueue** to be associated with outbound calls.
+1.	Navigate to **Users** and choose **Routing profiles** and edit the **Basic Routing Profile**. Navigate to **Settings** and **Queues**. Navigate to **Default outbound queue** and choose **BasicQueue** to be associated with outbound calls.
 
 ### Step 2 – Create an Amazon Connect contact flow for outbound voice contact
-1.	Download the contact flow json file from https://github.com/aws-samples/aws-support-connect-integration/blob/main/AMS_Outbound_Final.json
-1.	Navigate to **Routing** and **Contact flows** and **Create contact flow**.
-1.	Enter a name to the contact flow.
-1.	Choose the **Save** dropdown button and choose **Import flow**.
+1.	Download the contact flow json file from https://github.com/aws-samples/aws-support-connect-integration/blob/main/Support_Outbound_Final.json
+1.	Navigate to **Routing**, **Flows** and choose **Create flow**.
+1.	Using the dropdown button on the right, choose **Import (beta)**.
 1.	Select the contact flow you downloaded. The imported contact flow appears on the canvas as described below with three blocks – **Entry point**, **Play prompt** and **Disconnect**. 
 
     ![Amazon Connect Contact Flow](/images/Contact-flow-view.jpg)
 
     You will observe that the **Play prompt** block has an attribute ***SUPPORT_INCIDENT_DETAILS*** configured under **Text-to-speech or chat text**. This attribute is updated by the Lambda function deployed in the next step with the high priority support incident subject to trigger outbound voice notifications, hence do not change this attribute name. 
 
-1.	Save the contact flow
+1.	Save the contact flow by choosing **Save**. Choose **Publish** to publish the flow.
 
 ### Step 3 – Deploy the CloudFormation template
 You can deploy the CloudFormation template either by logging to the AWS Console or via AWS CLI. The CloudFormation template requires four parameters.
@@ -104,7 +102,7 @@ git clone https://github.com/aws-samples/aws-support-connect-integration.git
 cd ./aws-support-connect-integration
 # Use the AWS CLI to deploy the CloudFormation template
 aws cloudformation deploy \
---template-file template.yml \
+--template-file support-incident-outbound-connect-calling.yml \
 --stack-name <StackName> \
 --capabilities CAPABILITY_IAM \
 --region us-east-1 \
