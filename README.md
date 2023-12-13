@@ -106,7 +106,7 @@ aws cloudformation deploy \
 --stack-name <StackName> \
 --capabilities CAPABILITY_IAM \
 --region us-east-1 \
---parameter-overrides PhoneNumberToNotify=<include phone number> ConnectOutboundInstanceID=<include Connect InstanceID> ConnectOutboundSourcePhone=<include Connect Outbound Phone> ConnectOutboundContactFlowID=<include Connect Contact Flow ID>
+--parameter-overrides PhoneNumberToNotify=<include phone number> ConnectOutboundInstanceID=<include Connect InstanceID> ConnectOutboundSourcePhone=<include Connect Outbound Phone> ConnectOutboundContactFlowID=<include Connect Contact Flow ID> ConnectRegion=<include Amazon Connect Region>
 ```
 
 ### Step 4: Create a test AWS Support Case to verify that the solution has been implemented
