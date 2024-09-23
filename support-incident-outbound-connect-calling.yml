@@ -130,6 +130,8 @@ Resources:
               if case_severity == "urgent" or case_severity == "critical":
                   # Retrieve the case subject to update the outbound connect message
                   case_subject = retrieve_case['cases'][0]['subject']
+                  
+                  print("Case subject:" + case_subject)
 
                   # Make the outbound call with the Incident subject
                   connect_client.start_outbound_voice_contact(
