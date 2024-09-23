@@ -82,7 +82,7 @@ Resources:
   MakeOutboundConnectCall:
     Type: AWS::Lambda::Function
     Properties:
-      Runtime: python3.8
+      Runtime: python3.12
       Role: !GetAtt MakeOutboundConnectCallIAMRole.Arn
       Handler: index.handler
       Environment:
